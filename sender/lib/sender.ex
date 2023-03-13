@@ -1,18 +1,13 @@
 defmodule Sender do
-  @moduledoc """
-  Documentation for `Sender`.
-  """
+  @moduledoc false
 
-  @doc """
-  Hello world.
+  def send_email(email) do
+    Process.sleep(3000)
+    IO.puts("Email to #{email} sent")
+    {:ok, "email sent"}
+  end
 
-  ## Examples
-
-      iex> Sender.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def notify_all(emails) when is_list(emails) and emails != [] do
+    Enum.each(emails, &send_email/1)
   end
 end
