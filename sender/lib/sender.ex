@@ -9,11 +9,7 @@ defmodule Sender do
 
   def notify_all(emails) when is_list(emails) and emails != [] do
     emails
-    |> Enum.map(fn email ->
-      Task.async(fn ->
-        send_email(email)
-      end)
-    end)
-    |> Enum.map(&Task.await/1)
+    |> Task.async_stream(&send_email/1, max_concurrency: 2, ordered: false, on_timeout: :kill_task)
+    |> Enum.to_list()
   end
 end
