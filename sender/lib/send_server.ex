@@ -72,5 +72,8 @@ defmodule SendServer do
     {:noreply, new_state}
   end
 
+  @impl GenServer
+  def terminate(reason, _state), do: IO.puts("Terminating with reason #{reason}")
+
   # internal functions
 end
