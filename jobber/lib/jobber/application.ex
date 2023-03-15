@@ -8,6 +8,7 @@ defmodule Jobber.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      {Registry, keys: :unique, name: Jobber.JobRegistry},
       {DynamicSupervisor, strategy: :one_for_one, name: Jobber.JobRunner, max_seconds: 30}
     ]
 

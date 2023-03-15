@@ -9,10 +9,12 @@ defmodule Jobber.JobSupervisor do
   # Callbacks
   @impl Supervisor
   def init(args) do
-    children = [{
-      Jobber.Job,
-      args
-    }]
+    children = [
+      {
+        Jobber.Job,
+        args
+      }
+    ]
 
     options = [
       strategy: :one_for_one,
