@@ -9,6 +9,7 @@ defmodule Scrapper.Application do
   def start(_type, _args) do
     children = [
       PageProducer,
+      OnlinePageProducerConsumer,
       PageConsumerSupervisor
     ]
 
