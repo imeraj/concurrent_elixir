@@ -16,7 +16,7 @@ defmodule PageProducer do
   @impl GenStage
   def init(initial_state) do
     Logger.info("PageProducer init")
-    {:producer, initial_state}
+    {:producer, initial_state, buffer_size: 5}
   end
 
   @impl GenStage
