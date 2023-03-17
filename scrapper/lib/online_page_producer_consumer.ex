@@ -5,9 +5,9 @@ defmodule OnlinePageProducerConsumer do
   require Logger
 
   # API
-  def start_link(_args) do
+  def start_link(id) do
     initial_state = []
-    GenStage.start_link(__MODULE__, initial_state, name: __MODULE__)
+    GenStage.start_link(__MODULE__, initial_state, name: via(id))
   end
 
   # Callbacks
@@ -27,5 +27,9 @@ defmodule OnlinePageProducerConsumer do
     Logger.info("OnlinePageProducerConsumer received #{inspect(events)}")
     events = Enum.filter(events, &Scrapper.online?/1)
     {:noreply, events, state}
+  end
+
+  def via(id) do
+    {:via, Registry, {ProducerConsumerRegistry, id}}
   end
 end
