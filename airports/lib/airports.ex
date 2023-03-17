@@ -8,7 +8,7 @@ defmodule Airports do
   def open_airports do
     airports_csv()
     |> File.stream!()
-    |> Flow.from_enumerable()
+    |> Flow.from_enumerable(stages: 1)
     |> Flow.map(fn row ->
       [row] = CSV.parse_string(row, skip_headers: false)
 
@@ -20,6 +20,10 @@ defmodule Airports do
       }
     end)
     |> Flow.reject(&(&1.type == "closed"))
+    |> Flow.partition(key: {:key, :country})
+    |> Flow.reduce(fn -> %{} end, fn item, acc ->
+      Map.update(acc, item.country, 1, &(&1 + 1))
+    end)
     |> Enum.to_list()
   end
 end
