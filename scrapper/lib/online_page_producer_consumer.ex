@@ -19,7 +19,17 @@ defmodule OnlinePageProducerConsumer do
       {PageProducer, min_demand: 0, max_demand: 1}
     ]
 
-    {:producer_consumer, initial_state, subscribe_to: subscription}
+    hash = fn event ->
+      {event, :c}
+    end
+
+    opts = [
+      partitions: [:a, :b, :c],
+      hash: hash
+    ]
+
+    {:producer_consumer, initial_state,
+     subscribe_to: subscription, dispatcher: {GenStage.PartitionDispatcher, opts}}
   end
 
   @impl GenStage

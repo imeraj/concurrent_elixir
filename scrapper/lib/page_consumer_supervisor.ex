@@ -26,9 +26,9 @@ defmodule PageConsumerSupervisor do
       strategy: :one_for_one,
       subscribe_to: [
         {OnlinePageProducerConsumer.via("online_page_producer_consumer_1"),
-         max_demand: System.schedulers_online() * 2},
+         max_demand: System.schedulers_online() * 2, partition: :c},
         {OnlinePageProducerConsumer.via("online_page_producer_consumer_2"),
-         max_demand: System.schedulers_online() * 2}
+         max_demand: System.schedulers_online() * 2, partition: :b}
       ]
     ]
 
