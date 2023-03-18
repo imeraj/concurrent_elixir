@@ -8,7 +8,8 @@ defmodule Tickets.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      BookingsPipeline
+      BookingsPipeline,
+      NotificationsPipeline
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
