@@ -17,6 +17,11 @@ defmodule BookingsPipeline do
       producer: [module: {@producer, @producer_config}, concurrency: 1],
       processors: [
         default: [concurrency: System.schedulers_online() * 2]
+      ],
+      batchers: [
+        cinema: [],
+        musical: [],
+        default: []
       ]
     ]
 
@@ -26,12 +31,22 @@ defmodule BookingsPipeline do
   # callbacks
   @impl Broadway
   def handle_message(_processor, message, _context) do
-    %{data: %{event: event, user: user}} = message
+    %{data: %{event: event, user: _user}} = message
 
     if Tickets.tickets_available?(event) do
-      Tickets.create_ticket(user, event)
-      Tickets.send_email(user)
-      IO.inspect(message, label: "Message")
+      case event do
+        "cinema" ->
+          Broadway.Message.put_batcher(message, :cinema)
+
+        "musical" ->
+          Broadway.Message.put_batcher(message, :musical)
+
+        "failed" ->
+          Broadway.Message.put_batcher(message, :failed)
+
+        _ ->
+          message
+      end
     else
       Broadway.Message.failed(message, "bookings-closed")
     end
@@ -69,5 +84,18 @@ defmodule BookingsPipeline do
       message ->
         message
     end)
+  end
+
+  @impl Broadway
+  def handle_batch(_batcher, messages, batch_info, _context) do
+    IO.puts("#{inspect(self())} Batch #{batch_info.batcher} #{batch_info.batch_key} [size: #{batch_info.size}]")
+
+    messages
+    |> Tickets.insert_all_tickets()
+    |> Enum.each(fn %{data: %{user: user}} ->
+      Tickets.send_email(user)
+    end)
+
+    messages
   end
 end

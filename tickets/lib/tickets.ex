@@ -2,8 +2,7 @@ defmodule Tickets do
   @moduledoc false
 
   # helpers
-
-  def tickets_available?("cinema") do
+  def tickets_available?("failed") do
     Process.sleep(Enum.random(100..200))
     false
   end
@@ -29,5 +28,10 @@ defmodule Tickets do
 
   def users_by_ids(ids) when is_list(ids) do
     Enum.filter(@users, &(&1.id in ids))
+  end
+
+  def insert_all_tickets(messages) do
+    Process.sleep(Enum.count(messages) * 250)
+    messages
   end
 end
